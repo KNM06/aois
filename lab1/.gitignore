@@ -1,0 +1,12 @@
+*
+!.gitignore
+
+!main.py
+
+!constants.py
+
+!source/
+!source/*.py
+!tests/
+!tests/*.py
+
