@@ -72,31 +72,23 @@ class BooleanMath:
 
         for k in range(1, max_vars + 1):
             for diff_vars in itertools.combinations(self.variables, k):
-                # Находим переменные, которые остаются неизменными (статика)
                 static_vars = [v for v in self.variables if v not in diff_vars]
 
-                # Запоминаем индексы статических и дифференцируемых переменных
                 static_idx = [self.variables.index(v) for v in static_vars]
                 diff_idx = [self.variables.index(v) for v in diff_vars]
 
                 col = []
 
-                # Внешний цикл: перебираем комбинации только ОСТАВШИХСЯ переменных
-                # Если k=1 (осталось 3 переменные), этот цикл пройдет 8 раз.
-                # Если k=4 (осталось 0 переменных), он пройдет ровно 1 раз.
                 for static_vals in itertools.product([0, 1], repeat=len(static_vars)):
                     xor_sum = 0
 
-                    # Внутренний цикл: перебираем 0 и 1 для дифференцируемых переменных
                     for diff_vals in itertools.product([0, 1], repeat=k):
-                        # Собираем полный набор из 4 нулей/единиц для поиска в lookup
                         full_combo = [0] * len(self.variables)
                         for i, val in zip(static_idx, static_vals):
                             full_combo[i] = val
                         for i, val in zip(diff_idx, diff_vals):
                             full_combo[i] = val
 
-                        # Считаем сумму по модулю 2 (XOR)
                         xor_sum ^= lookup[tuple(full_combo)]
 
                     col.append(xor_sum)
