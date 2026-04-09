@@ -1,0 +1,12 @@
+*
+!.gitignore
+
+!main.py
+
+
+!source/
+!source/*.py
+!tests/
+!tests/*.py
+!logisim/
+!logisim/*.circ
