@@ -2,10 +2,10 @@ from source.LogicFormatter import LogicFormatter
 
 
 class ConsoleRenderer:
-    def __init__(self, variables):
+    def __init__(self, variables: list[str]) -> None:
         self.variables = variables
 
-    def print_truth_table(self, raw_expr, tt):
+    def print_truth_table(self, raw_expr: str, tt: list) -> None:
         print(f"\n--- Таблица истинности для: {raw_expr} ---")
         header = " | ".join(self.variables) + " || F"
         print(header)
@@ -13,7 +13,7 @@ class ConsoleRenderer:
         for combo, res in tt:
             print(" | ".join(map(str, combo)) + f" || {res}")
 
-    def print_quine_table(self, minimizer):
+    def print_quine_table(self, minimizer) -> None:
         if minimizer.is_edge_case:
             print("  Таблица не требуется (краевой случай).")
             return
@@ -67,7 +67,7 @@ class ConsoleRenderer:
             f"  Итоговая форма из таблицы:    {minimizer.get_minimized_str(self.variables)}"
         )
 
-    def print_karnaugh_map(self, tt):
+    def print_karnaugh_map(self, tt: list) -> None:
         n = len(self.variables)
         if n < 2 or n > 5:
             print(

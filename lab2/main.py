@@ -1,7 +1,7 @@
 from source.BooleanAnalyzer import BooleanAnalyzer
 
 
-def main():
+def main() -> None:
     print("=" * 50)
     print("=== Анализатор булевых функций ===")
     print("Поддерживаемые операторы:")

@@ -2,11 +2,11 @@ import itertools
 
 
 class BooleanMath:
-    def __init__(self, truth_table, variables):
+    def __init__(self, truth_table: list, variables: list[str]) -> None:
         self.tt = truth_table
         self.variables = variables
 
-    def get_post_classes(self):
+    def get_post_classes(self) -> dict[str, bool]:
         t0 = self.tt[0][1] == 0
         t1 = self.tt[-1][1] == 1
 
@@ -30,7 +30,7 @@ class BooleanMath:
 
         return {"T0": t0, "T1": t1, "S": s, "M": m, "L": l}
 
-    def _get_zhegalkin_coeffs(self):
+    def _get_zhegalkin_coeffs(self) -> list[int]:
         row = [res for _, res in self.tt]
         coeffs = [row[0]]
         for _ in range(len(row) - 1):
@@ -38,7 +38,7 @@ class BooleanMath:
             coeffs.append(row[0])
         return coeffs
 
-    def get_zhegalkin_polynomial(self):
+    def get_zhegalkin_polynomial(self) -> str:
         coeffs = self._get_zhegalkin_coeffs()
         terms = []
         for i, coeff in enumerate(coeffs):
@@ -49,7 +49,7 @@ class BooleanMath:
                 terms.append("".join(term_vars) if term_vars else "1")
         return " ^ ".join(terms) if terms else "0"
 
-    def get_fictitious_variables(self):
+    def get_fictitious_variables(self) -> list[str]:
         fict_vars = []
         lookup = {combo: res for combo, res in self.tt}
         for i, var in enumerate(self.variables):
@@ -65,24 +65,41 @@ class BooleanMath:
                 fict_vars.append(var)
         return fict_vars
 
-    def get_boolean_derivatives(self):
+    def get_boolean_derivatives(self) -> dict:
         lookup = {combo: res for combo, res in self.tt}
         results = {}
         max_vars = min(4, len(self.variables))
+
         for k in range(1, max_vars + 1):
             for diff_vars in itertools.combinations(self.variables, k):
-                idx = [self.variables.index(v) for v in diff_vars]
+                # Находим переменные, которые остаются неизменными (статика)
+                static_vars = [v for v in self.variables if v not in diff_vars]
+
+                # Запоминаем индексы статических и дифференцируемых переменных
+                static_idx = [self.variables.index(v) for v in static_vars]
+                diff_idx = [self.variables.index(v) for v in diff_vars]
+
                 col = []
-                for combo, _ in self.tt:
-                    base = list(combo)
-                    for i in idx:
-                        base[i] = 0
+
+                # Внешний цикл: перебираем комбинации только ОСТАВШИХСЯ переменных
+                # Если k=1 (осталось 3 переменные), этот цикл пройдет 8 раз.
+                # Если k=4 (осталось 0 переменных), он пройдет ровно 1 раз.
+                for static_vals in itertools.product([0, 1], repeat=len(static_vars)):
                     xor_sum = 0
+
+                    # Внутренний цикл: перебираем 0 и 1 для дифференцируемых переменных
                     for diff_vals in itertools.product([0, 1], repeat=k):
-                        test = list(base)
-                        for i, val in zip(idx, diff_vals):
-                            test[i] = val
-                        xor_sum ^= lookup[tuple(test)]
+                        # Собираем полный набор из 4 нулей/единиц для поиска в lookup
+                        full_combo = [0] * len(self.variables)
+                        for i, val in zip(static_idx, static_vals):
+                            full_combo[i] = val
+                        for i, val in zip(diff_idx, diff_vals):
+                            full_combo[i] = val
+
+                        # Считаем сумму по модулю 2 (XOR)
+                        xor_sum ^= lookup[tuple(full_combo)]
+
                     col.append(xor_sum)
                 results[diff_vars] = col
+
         return results

@@ -6,7 +6,7 @@ from source.ConsoleRenderer import ConsoleRenderer
 
 
 class BooleanAnalyzer:
-    def __init__(self, expression):
+    def __init__(self, expression: str) -> None:
         self.raw_expression = expression
         self.is_valid = False
         try:
@@ -32,7 +32,7 @@ class BooleanAnalyzer:
         except ValueError as e:
             print(f"Ошибка анализа выражения '{expression}':\n> {e}")
 
-    def analyze(self):
+    def analyze(self) -> None:
         if not self.is_valid:
             return
 
